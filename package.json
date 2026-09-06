@@ -1,12 +1,15 @@
 {
-  "name": "personalportfolio",
+  "name": "letsvirtual-monorepo",
   "version": "1.0.0",
-  "description": "My personal 3D portfolio",
-  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "Web":"nodemon index"
-  },
-  "author": "Saif-ur-Rehman",
-  "license": "ISC"
+    "start:backend": "npm run start --workspace=backend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev": "npm run dev:backend & npm run dev:frontend"
+  }
 }

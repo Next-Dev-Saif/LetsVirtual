@@ -1,0 +1,912 @@
+
+> frontend@0.0.0 lint
+> oxlint
+
+
+  x Adjacent JSX elements must be wrapped in an enclosing tag.
+     ,-[src/components/ui/GameGuide.jsx:166:5]
+ 165 |         </div>
+ 166 |     </div>
+     :     ^
+ 167 |   );
+     `----
+  help: Did you want a JSX fragment `<>...</>`?
+
+  ! eslint(no-unused-vars): Identifier 'ChevronRight' is imported but never used.
+   ,-[src/components/ui/EventsPanel.jsx:2:45]
+ 1 | import { useState } from 'react';
+ 2 | import { Radio, Music, Target, Calendar, X, ChevronRight } from 'lucide-react';
+   :                                             ^^^^^^|^^^^^
+   :                                                   `-- 'ChevronRight' is imported here
+ 3 | import { useMMOStore } from '../../store/useMMOStore';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'isPlaying' is declared but never used. Unused variables should start with a '_'.
+   ,-[src/components/scene/ConcertAudio.jsx:6:10]
+ 5 |   const audioRef = useRef(null);
+ 6 |   const [isPlaying, setIsPlaying] = useState(false);
+   :          ^^^^|^^^^
+   :              `-- 'isPlaying' is declared here
+ 7 |   const localId = useMMOStore((state) => state.localId);
+   `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Identifier 'User' is imported but never used.
+   ,-[src/components/ui/PlayerRoster.jsx:2:42]
+ 1 | import { useMMOStore } from '../../store/useMMOStore';
+ 2 | import { Users, Music, Swords, Sparkles, User } from 'lucide-react';
+   :                                          ^^|^
+   :                                            `-- 'User' is imported here
+ 3 | 
+   `----
+  help: Consider removing this import.
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/ui/ConcertNotification.jsx:24:25]
+ 23 |     store.addAudienceVFX({
+ 24 |       id: `${localId}-${Date.now()}-${Math.random()}`,
+    :                         ^^^^^|^^^^
+    :                              `-- Cannot call impure function
+ 25 |       senderId: localId,
+    `----
+  help: `Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/ui/ConcertNotification.jsx:24:39]
+ 23 |     store.addAudienceVFX({
+ 24 |       id: `${localId}-${Date.now()}-${Math.random()}`,
+    :                                       ^^^^^^|^^^^^^
+    :                                             `-- Cannot call impure function
+ 25 |       senderId: localId,
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/ui/ConcertNotification.jsx:28:18]
+ 27 |       actionType,
+ 28 |       timestamp: Date.now()
+    :                  ^^^^^|^^^^
+    :                       `-- Cannot call impure function
+ 29 |     });
+    `----
+  help: `Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/SkyFireworks.jsx:82:51]
+ 81 |   useMemo(() => {
+ 82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+    :                                                   ^^^^|^^^^
+    :                                                       `-- value cannot be modified
+ 83 |   }, [positions]);
+    `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/SkyFireworks.jsx:91:7]
+ 64 | 
+ 65 |   const positions  = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+    :         ^^^^|^^^^
+    :             `-- `positions` originates here
+ 66 |   const colors     = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+ 67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+ 68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+ 69 | 
+ 70 |   // Per-firework mutable state (not React state — updated every frame)
+ 71 |   const fwState = useMemo(() => FIREWORK_CONFIGS.map((cfg, i) => ({
+ 72 |     cfg,
+ 73 |     phase:    'waiting',
+ 74 |     countdown: i * 0.7,           // stagger start times
+ 75 |     burstAlt:  randomBurstAlt(),
+ 76 |     rocketY:   0,
+ 77 |     baseIdx:   i * PARTICLES_PER_FIREWORK,
+ 78 |   })), []);
+ 79 | 
+ 80 |   // Hide all particles initially
+ 81 |   useMemo(() => {
+ 82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+ 83 |   }, [positions]);
+ 84 | 
+ 85 |   const burst = useCallback((fw) => {
+ 86 |     fw.phase   = 'burst';
+ 87 |     fw.countdown = 0;
+ 88 |     const { cfg, baseIdx } = fw;
+ 89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+ 90 |       const idx = (baseIdx + p) * 3;
+ 91 |       positions[idx]     = cfg.launchX;
+    :       ^^^^|^^^^
+    :           `-- `positions` cannot be modified
+ 92 |       positions[idx + 1] = fw.burstAlt;
+    `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/SkyFireworks.jsx:98:7]
+ 66 |   const colors     = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+ 67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+    :         ^^^^^|^^^^
+    :              `-- `velocities` originates here
+ 68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+ 69 | 
+ 70 |   // Per-firework mutable state (not React state — updated every frame)
+ 71 |   const fwState = useMemo(() => FIREWORK_CONFIGS.map((cfg, i) => ({
+ 72 |     cfg,
+ 73 |     phase:    'waiting',
+ 74 |     countdown: i * 0.7,           // stagger start times
+ 75 |     burstAlt:  randomBurstAlt(),
+ 76 |     rocketY:   0,
+ 77 |     baseIdx:   i * PARTICLES_PER_FIREWORK,
+ 78 |   })), []);
+ 79 | 
+ 80 |   // Hide all particles initially
+ 81 |   useMemo(() => {
+ 82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+ 83 |   }, [positions]);
+ 84 | 
+ 85 |   const burst = useCallback((fw) => {
+ 86 |     fw.phase   = 'burst';
+ 87 |     fw.countdown = 0;
+ 88 |     const { cfg, baseIdx } = fw;
+ 89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+ 90 |       const idx = (baseIdx + p) * 3;
+ 91 |       positions[idx]     = cfg.launchX;
+ 92 |       positions[idx + 1] = fw.burstAlt;
+ 93 |       positions[idx + 2] = cfg.launchZ;
+ 94 | 
+ 95 |       const theta = Math.random() * Math.PI * 2;
+ 96 |       const phi   = Math.acos(2 * Math.random() - 1);
+ 97 |       const spd   = 0.18 + Math.random() * 0.42;
+ 98 |       velocities[idx]     = spd * Math.sin(phi) * Math.cos(theta);
+    :       ^^^^^|^^^^
+    :            `-- `velocities` cannot be modified
+ 99 |       velocities[idx + 1] = spd * Math.sin(phi) * Math.sin(theta) * 0.65;
+    `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+     ,-[src/components/scene/SkyFireworks.jsx:103:7]
+  65 |   const positions  = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+  66 |   const colors     = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+     :         ^^^|^^
+     :            `-- `colors` originates here
+  67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+  68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+  69 | 
+  70 |   // Per-firework mutable state (not React state — updated every frame)
+  71 |   const fwState = useMemo(() => FIREWORK_CONFIGS.map((cfg, i) => ({
+  72 |     cfg,
+  73 |     phase:    'waiting',
+  74 |     countdown: i * 0.7,           // stagger start times
+  75 |     burstAlt:  randomBurstAlt(),
+  76 |     rocketY:   0,
+  77 |     baseIdx:   i * PARTICLES_PER_FIREWORK,
+  78 |   })), []);
+  79 | 
+  80 |   // Hide all particles initially
+  81 |   useMemo(() => {
+  82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+  83 |   }, [positions]);
+  84 | 
+  85 |   const burst = useCallback((fw) => {
+  86 |     fw.phase   = 'burst';
+  87 |     fw.countdown = 0;
+  88 |     const { cfg, baseIdx } = fw;
+  89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+  90 |       const idx = (baseIdx + p) * 3;
+  91 |       positions[idx]     = cfg.launchX;
+  92 |       positions[idx + 1] = fw.burstAlt;
+  93 |       positions[idx + 2] = cfg.launchZ;
+  94 | 
+  95 |       const theta = Math.random() * Math.PI * 2;
+  96 |       const phi   = Math.acos(2 * Math.random() - 1);
+  97 |       const spd   = 0.18 + Math.random() * 0.42;
+  98 |       velocities[idx]     = spd * Math.sin(phi) * Math.cos(theta);
+  99 |       velocities[idx + 1] = spd * Math.sin(phi) * Math.sin(theta) * 0.65;
+ 100 |       velocities[idx + 2] = spd * Math.cos(phi);
+ 101 | 
+ 102 |       // Bright vertex colour for additive bloom
+ 103 |       colors[idx]     = cfg.color.r * 3;
+     :       ^^^|^^
+     :          `-- `colors` cannot be modified
+ 104 |       colors[idx + 1] = cfg.color.g * 3;
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+     ,-[src/components/scene/SkyFireworks.jsx:106:7]
+  67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+  68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+     :         ^^^^|^^^^
+     :             `-- `lifetimes` originates here
+  69 | 
+  70 |   // Per-firework mutable state (not React state — updated every frame)
+  71 |   const fwState = useMemo(() => FIREWORK_CONFIGS.map((cfg, i) => ({
+  72 |     cfg,
+  73 |     phase:    'waiting',
+  74 |     countdown: i * 0.7,           // stagger start times
+  75 |     burstAlt:  randomBurstAlt(),
+  76 |     rocketY:   0,
+  77 |     baseIdx:   i * PARTICLES_PER_FIREWORK,
+  78 |   })), []);
+  79 | 
+  80 |   // Hide all particles initially
+  81 |   useMemo(() => {
+  82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+  83 |   }, [positions]);
+  84 | 
+  85 |   const burst = useCallback((fw) => {
+  86 |     fw.phase   = 'burst';
+  87 |     fw.countdown = 0;
+  88 |     const { cfg, baseIdx } = fw;
+  89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+  90 |       const idx = (baseIdx + p) * 3;
+  91 |       positions[idx]     = cfg.launchX;
+  92 |       positions[idx + 1] = fw.burstAlt;
+  93 |       positions[idx + 2] = cfg.launchZ;
+  94 | 
+  95 |       const theta = Math.random() * Math.PI * 2;
+  96 |       const phi   = Math.acos(2 * Math.random() - 1);
+  97 |       const spd   = 0.18 + Math.random() * 0.42;
+  98 |       velocities[idx]     = spd * Math.sin(phi) * Math.cos(theta);
+  99 |       velocities[idx + 1] = spd * Math.sin(phi) * Math.sin(theta) * 0.65;
+ 100 |       velocities[idx + 2] = spd * Math.cos(phi);
+ 101 | 
+ 102 |       // Bright vertex colour for additive bloom
+ 103 |       colors[idx]     = cfg.color.r * 3;
+ 104 |       colors[idx + 1] = cfg.color.g * 3;
+ 105 |       colors[idx + 2] = cfg.color.b * 3;
+ 106 |       lifetimes[baseIdx + p] = 1;
+     :       ^^^^|^^^^
+     :           `-- `lifetimes` cannot be modified
+ 107 |     }
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+     ,-[src/components/scene/SkyFireworks.jsx:117:45]
+  64 | 
+  65 |   const positions  = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+     :         ^^^^|^^^^
+     :             `-- `positions` originates here
+  66 |   const colors     = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+  67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+  68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+  69 | 
+  70 |   // Per-firework mutable state (not React state — updated every frame)
+  71 |   const fwState = useMemo(() => FIREWORK_CONFIGS.map((cfg, i) => ({
+  72 |     cfg,
+  73 |     phase:    'waiting',
+  74 |     countdown: i * 0.7,           // stagger start times
+  75 |     burstAlt:  randomBurstAlt(),
+  76 |     rocketY:   0,
+  77 |     baseIdx:   i * PARTICLES_PER_FIREWORK,
+  78 |   })), []);
+  79 | 
+  80 |   // Hide all particles initially
+  81 |   useMemo(() => {
+  82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+  83 |   }, [positions]);
+  84 | 
+  85 |   const burst = useCallback((fw) => {
+  86 |     fw.phase   = 'burst';
+  87 |     fw.countdown = 0;
+  88 |     const { cfg, baseIdx } = fw;
+  89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+  90 |       const idx = (baseIdx + p) * 3;
+  91 |       positions[idx]     = cfg.launchX;
+  92 |       positions[idx + 1] = fw.burstAlt;
+  93 |       positions[idx + 2] = cfg.launchZ;
+  94 | 
+  95 |       const theta = Math.random() * Math.PI * 2;
+  96 |       const phi   = Math.acos(2 * Math.random() - 1);
+  97 |       const spd   = 0.18 + Math.random() * 0.42;
+  98 |       velocities[idx]     = spd * Math.sin(phi) * Math.cos(theta);
+  99 |       velocities[idx + 1] = spd * Math.sin(phi) * Math.sin(theta) * 0.65;
+ 100 |       velocities[idx + 2] = spd * Math.cos(phi);
+ 101 | 
+ 102 |       // Bright vertex colour for additive bloom
+ 103 |       colors[idx]     = cfg.color.r * 3;
+ 104 |       colors[idx + 1] = cfg.color.g * 3;
+ 105 |       colors[idx + 2] = cfg.color.b * 3;
+ 106 |       lifetimes[baseIdx + p] = 1;
+ 107 |     }
+ 108 |   }, [positions, velocities, colors, lifetimes]);
+ 109 | 
+ 110 |   const hide = useCallback((fw) => {
+ 111 |     fw.phase     = 'waiting';
+ 112 |     fw.countdown = 1.5 + Math.random() * 2.5;    // 1.5–4 s gap, nearly continuous
+ 113 |     fw.burstAlt  = randomBurstAlt();
+ 114 |     fw.rocketY   = 0;
+ 115 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+ 116 |       const idx = (fw.baseIdx + p) * 3;
+ 117 |       positions[idx] = positions[idx + 1] = positions[idx + 2] = 9999;
+     :                                             ^^^^|^^^^
+     :                                                 `-- `positions` cannot be modified
+ 118 |       lifetimes[fw.baseIdx + p] = 0;
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+     ,-[src/components/scene/SkyFireworks.jsx:118:7]
+  67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+  68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+     :         ^^^^|^^^^
+     :             `-- `lifetimes` originates here
+  69 | 
+  70 |   // Per-firework mutable state (not React state — updated every frame)
+  71 |   const fwState = useMemo(() => FIREWORK_CONFIGS.map((cfg, i) => ({
+  72 |     cfg,
+  73 |     phase:    'waiting',
+  74 |     countdown: i * 0.7,           // stagger start times
+  75 |     burstAlt:  randomBurstAlt(),
+  76 |     rocketY:   0,
+  77 |     baseIdx:   i * PARTICLES_PER_FIREWORK,
+  78 |   })), []);
+  79 | 
+  80 |   // Hide all particles initially
+  81 |   useMemo(() => {
+  82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+  83 |   }, [positions]);
+  84 | 
+  85 |   const burst = useCallback((fw) => {
+  86 |     fw.phase   = 'burst';
+  87 |     fw.countdown = 0;
+  88 |     const { cfg, baseIdx } = fw;
+  89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+  90 |       const idx = (baseIdx + p) * 3;
+  91 |       positions[idx]     = cfg.launchX;
+  92 |       positions[idx + 1] = fw.burstAlt;
+  93 |       positions[idx + 2] = cfg.launchZ;
+  94 | 
+  95 |       const theta = Math.random() * Math.PI * 2;
+  96 |       const phi   = Math.acos(2 * Math.random() - 1);
+  97 |       const spd   = 0.18 + Math.random() * 0.42;
+  98 |       velocities[idx]     = spd * Math.sin(phi) * Math.cos(theta);
+  99 |       velocities[idx + 1] = spd * Math.sin(phi) * Math.sin(theta) * 0.65;
+ 100 |       velocities[idx + 2] = spd * Math.cos(phi);
+ 101 | 
+ 102 |       // Bright vertex colour for additive bloom
+ 103 |       colors[idx]     = cfg.color.r * 3;
+ 104 |       colors[idx + 1] = cfg.color.g * 3;
+ 105 |       colors[idx + 2] = cfg.color.b * 3;
+ 106 |       lifetimes[baseIdx + p] = 1;
+ 107 |     }
+ 108 |   }, [positions, velocities, colors, lifetimes]);
+ 109 | 
+ 110 |   const hide = useCallback((fw) => {
+ 111 |     fw.phase     = 'waiting';
+ 112 |     fw.countdown = 1.5 + Math.random() * 2.5;    // 1.5–4 s gap, nearly continuous
+ 113 |     fw.burstAlt  = randomBurstAlt();
+ 114 |     fw.rocketY   = 0;
+ 115 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+ 116 |       const idx = (fw.baseIdx + p) * 3;
+ 117 |       positions[idx] = positions[idx + 1] = positions[idx + 2] = 9999;
+ 118 |       lifetimes[fw.baseIdx + p] = 0;
+     :       ^^^^|^^^^
+     :           `-- `lifetimes` cannot be modified
+ 119 |     }
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+     ,-[src/components/scene/SkyFireworks.jsx:129:9]
+  70 |   // Per-firework mutable state (not React state — updated every frame)
+  71 |   const fwState = useMemo(() => FIREWORK_CONFIGS.map((cfg, i) => ({
+     :         ^^^|^^^
+     :            `-- `fwState` originates here
+  72 |     cfg,
+  73 |     phase:    'waiting',
+  74 |     countdown: i * 0.7,           // stagger start times
+  75 |     burstAlt:  randomBurstAlt(),
+  76 |     rocketY:   0,
+  77 |     baseIdx:   i * PARTICLES_PER_FIREWORK,
+  78 |   })), []);
+  79 | 
+  80 |   // Hide all particles initially
+  81 |   useMemo(() => {
+  82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+  83 |   }, [positions]);
+  84 | 
+  85 |   const burst = useCallback((fw) => {
+  86 |     fw.phase   = 'burst';
+  87 |     fw.countdown = 0;
+  88 |     const { cfg, baseIdx } = fw;
+  89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+  90 |       const idx = (baseIdx + p) * 3;
+  91 |       positions[idx]     = cfg.launchX;
+  92 |       positions[idx + 1] = fw.burstAlt;
+  93 |       positions[idx + 2] = cfg.launchZ;
+  94 | 
+  95 |       const theta = Math.random() * Math.PI * 2;
+  96 |       const phi   = Math.acos(2 * Math.random() - 1);
+  97 |       const spd   = 0.18 + Math.random() * 0.42;
+  98 |       velocities[idx]     = spd * Math.sin(phi) * Math.cos(theta);
+  99 |       velocities[idx + 1] = spd * Math.sin(phi) * Math.sin(theta) * 0.65;
+ 100 |       velocities[idx + 2] = spd * Math.cos(phi);
+ 101 | 
+ 102 |       // Bright vertex colour for additive bloom
+ 103 |       colors[idx]     = cfg.color.r * 3;
+ 104 |       colors[idx + 1] = cfg.color.g * 3;
+ 105 |       colors[idx + 2] = cfg.color.b * 3;
+ 106 |       lifetimes[baseIdx + p] = 1;
+ 107 |     }
+ 108 |   }, [positions, velocities, colors, lifetimes]);
+ 109 | 
+ 110 |   const hide = useCallback((fw) => {
+ 111 |     fw.phase     = 'waiting';
+ 112 |     fw.countdown = 1.5 + Math.random() * 2.5;    // 1.5–4 s gap, nearly continuous
+ 113 |     fw.burstAlt  = randomBurstAlt();
+ 114 |     fw.rocketY   = 0;
+ 115 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+ 116 |       const idx = (fw.baseIdx + p) * 3;
+ 117 |       positions[idx] = positions[idx + 1] = positions[idx + 2] = 9999;
+ 118 |       lifetimes[fw.baseIdx + p] = 0;
+ 119 |     }
+ 120 |   }, [positions, lifetimes]);
+ 121 | 
+ 122 |   useFrame((_, delta) => {
+ 123 |     const geo = pointsRef.current?.geometry;
+ 124 |     if (!geo) return;
+ 125 | 
+ 126 |     for (const fw of fwState) {
+ 127 | 
+ 128 |       if (fw.phase === 'waiting') {
+ 129 |         fw.countdown -= delta;
+     :         ^|
+     :          `-- `fwState` cannot be modified
+ 130 |         if (fw.countdown <= 0) {
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/SkyFireworks.jsx:65:9]
+ 64 | 
+ 65 |   const positions  = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+    :         ^^^^|^^^^
+    :             `-- `positions` originates here
+ 66 |   const colors     = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+    `----
+     ,-[src/components/scene/SkyFireworks.jsx:139:9]
+ 138 |         const idx = fw.baseIdx * 3;
+ 139 |         positions[idx]     = fw.cfg.launchX;
+     :         ^^^^|^^^^
+     :             `-- `positions` cannot be modified
+ 140 |         positions[idx + 1] = fw.rocketY;
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/SkyFireworks.jsx:67:9]
+ 66 |   const colors     = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+ 67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+    :         ^^^^^|^^^^
+    :              `-- `velocities` originates here
+ 68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+    `----
+     ,-[src/components/scene/SkyFireworks.jsx:150:11]
+ 149 |           const pidx = (fw.baseIdx + p) * 3;
+ 150 |           velocities[pidx + 1] -= delta * 0.55;   // gravity
+     :           ^^^^^|^^^^
+     :                `-- `velocities` cannot be modified
+ 151 |           positions[pidx]     += velocities[pidx]     * delta * 55;
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/SkyFireworks.jsx:68:9]
+ 67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+ 68 |   const lifetimes  = useMemo(() => new Float32Array(TOTAL_PARTICLES),     []);
+    :         ^^^^|^^^^
+    :             `-- `lifetimes` originates here
+ 69 | 
+    `----
+     ,-[src/components/scene/SkyFireworks.jsx:154:11]
+ 153 |           positions[pidx + 2] += velocities[pidx + 2] * delta * 55;
+ 154 |           lifetimes[fw.baseIdx + p] = fade;
+     :           ^^^^|^^^^
+     :               `-- `lifetimes` cannot be modified
+ 155 | 
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/SkyFireworks.jsx:66:9]
+ 65 |   const positions  = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+ 66 |   const colors     = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+    :         ^^^|^^
+    :            `-- `colors` originates here
+ 67 |   const velocities = useMemo(() => new Float32Array(TOTAL_PARTICLES * 3), []);
+    `----
+     ,-[src/components/scene/SkyFireworks.jsx:158:11]
+ 157 |           const cidx = (fw.baseIdx + p) * 3;
+ 158 |           colors[cidx]     = fw.cfg.color.r * 3 * fade;
+     :           ^^^|^^
+     :              `-- `colors` cannot be modified
+ 159 |           colors[cidx + 1] = fw.cfg.color.g * 3 * fade;
+     `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): Cannot modify local variables after render completes
+    ,-[src/components/scene/SkyFireworks.jsx:91:7]
+ 84 | 
+ 85 |   const burst = useCallback((fw) => {
+    :                             ^^^^|^^^^
+    :                                 `-- This function may (indirectly) reassign or modify `positions` after render
+ 86 |     fw.phase   = 'burst';
+ 87 |     fw.countdown = 0;
+ 88 |     const { cfg, baseIdx } = fw;
+ 89 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+ 90 |       const idx = (baseIdx + p) * 3;
+ 91 |       positions[idx]     = cfg.launchX;
+    :       ^^^^|^^^^
+    :           `-- This modifies `positions`
+ 92 |       positions[idx + 1] = fw.burstAlt;
+    `----
+  help: This argument is a function which may reassign or mutate `positions` after render, which can cause inconsistent behavior on subsequent renders. Consider using state instead
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): Cannot modify local variables after render completes
+     ,-[src/components/scene/SkyFireworks.jsx:117:45]
+ 109 | 
+ 110 |   const hide = useCallback((fw) => {
+     :                            ^^^^|^^^^
+     :                                `-- This function may (indirectly) reassign or modify `positions` after render
+ 111 |     fw.phase     = 'waiting';
+ 112 |     fw.countdown = 1.5 + Math.random() * 2.5;    // 1.5–4 s gap, nearly continuous
+ 113 |     fw.burstAlt  = randomBurstAlt();
+ 114 |     fw.rocketY   = 0;
+ 115 |     for (let p = 0; p < PARTICLES_PER_FIREWORK; p++) {
+ 116 |       const idx = (fw.baseIdx + p) * 3;
+ 117 |       positions[idx] = positions[idx + 1] = positions[idx + 2] = 9999;
+     :                                             ^^^^|^^^^
+     :                                                 `-- This modifies `positions`
+ 118 |       lifetimes[fw.baseIdx + p] = 0;
+     `----
+  help: This argument is a function which may reassign or mutate `positions` after render, which can cause inconsistent behavior on subsequent renders. Consider using state instead
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): Cannot modify local variables after render completes
+     ,-[src/components/scene/SkyFireworks.jsx:129:9]
+ 121 | 
+ 122 |   useFrame((_, delta) => {
+     :            ^^^^^^^|^^^^^^^
+     :                   `-- This function may (indirectly) reassign or modify `fwState` after render
+ 123 |     const geo = pointsRef.current?.geometry;
+ 124 |     if (!geo) return;
+ 125 | 
+ 126 |     for (const fw of fwState) {
+ 127 | 
+ 128 |       if (fw.phase === 'waiting') {
+ 129 |         fw.countdown -= delta;
+     :         ^|
+     :          `-- This modifies `fwState`
+ 130 |         if (fw.countdown <= 0) {
+     `----
+  help: This argument is a function which may reassign or mutate `fwState` after render, which can cause inconsistent behavior on subsequent renders. Consider using state instead
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(void-use-memo): useMemo() callbacks must return a value
+    ,-[src/components/scene/SkyFireworks.jsx:81:11]
+ 80 |   // Hide all particles initially
+ 81 |   useMemo(() => {
+    :           ^^^|^^^
+    :              `-- useMemo() callbacks must return a value
+ 82 |     for (let i = 0; i < TOTAL_PARTICLES * 3; i++) positions[i] = 9999;
+    `----
+  help: This useMemo() callback doesn't return a value. useMemo() is for computing and caching values, not for arbitrary side effects
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/use-memo
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/SmashEmTarget.jsx:33:21]
+ 32 |     for (let i = 0; i < 10; i++) {
+ 33 |       const angle = Math.random() * Math.PI * 2;
+    :                     ^^^^^^|^^^^^^
+    :                           `-- Cannot call impure function
+ 34 |       const speed = 1.2 + Math.random() * 2.5;
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/SmashEmTarget.jsx:34:27]
+ 33 |       const angle = Math.random() * Math.PI * 2;
+ 34 |       const speed = 1.2 + Math.random() * 2.5;
+    :                           ^^^^^^|^^^^^^
+    :                                 `-- Cannot call impure function
+ 35 |       s.push({
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/SmashEmTarget.jsx:36:49]
+ 35 |       s.push({
+ 36 |         dir: new THREE.Vector3(Math.cos(angle), Math.random() * 1.5 + 0.2, Math.sin(angle)).normalize(),
+    :                                                 ^^^^^^|^^^^^^
+    :                                                       `-- Cannot call impure function
+ 37 |         speed,
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/SmashEmTarget.jsx:38:23]
+ 37 |         speed,
+ 38 |         scale: 0.06 + Math.random() * 0.08
+    :                       ^^^^^^|^^^^^^
+    :                             `-- Cannot call impure function
+ 39 |       });
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! eslint(no-unused-vars): Variable 'concertStatus' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/scene/PartyScene.jsx:15:9]
+ 14 | export function PartyScene() {
+ 15 |   const concertStatus = useMMOStore((state) => state.concertState.status);
+    :         ^^^^^^|^^^^^^
+    :               `-- 'concertStatus' is declared here
+ 16 |   const smashEmStatus = useMMOStore((state) => state.smashEmState.status);
+    `----
+  help: Consider removing this declaration.
+
+  ! eslint(no-unused-vars): Variable 'smashEmStatus' is declared but never used. Unused variables should start with a '_'.
+    ,-[src/components/scene/PartyScene.jsx:16:9]
+ 15 |   const concertStatus = useMMOStore((state) => state.concertState.status);
+ 16 |   const smashEmStatus = useMMOStore((state) => state.smashEmState.status);
+    :         ^^^^^^|^^^^^^
+    :               `-- 'smashEmStatus' is declared here
+ 17 | 
+    `----
+  help: Consider removing this declaration.
+
+  ! react(immutability): This value cannot be modified
+    ,-[src/components/scene/Fireworks.jsx:9:21]
+  8 |   
+  9 |   const [positions, velocities, colors] = useMemo(() => {
+    :                     ^^^^^|^^^^
+    :                          `-- `velocities` originates here
+ 10 |     const p = new Float32Array(particleCount * 3);
+    `----
+    ,-[src/components/scene/Fireworks.jsx:48:7]
+ 47 |       // Gravity
+ 48 |       velocities[i * 3 + 1] -= 0.002; 
+    :       ^^^^^|^^^^
+    :            `-- `velocities` cannot be modified
+ 49 |       
+    `----
+  help: Modifying a value previously passed as an argument to a hook is not allowed. Consider moving the modification before calling the hook
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(immutability): Cannot modify local variables after render completes
+    ,-[src/components/scene/Fireworks.jsx:48:7]
+ 39 | 
+ 40 |   useFrame(() => {
+    :            ^^^|^^^
+    :               `-- This function may (indirectly) reassign or modify `velocities` after render
+ 41 |     if (!pointsRef.current) return;
+ 42 |     
+ 43 |     const p = pointsRef.current.geometry.attributes.position.array;
+ 44 |     
+ 45 |     // Update positions based on velocity and add gravity
+ 46 |     for (let i = 0; i < particleCount; i++) {
+ 47 |       // Gravity
+ 48 |       velocities[i * 3 + 1] -= 0.002; 
+    :       ^^^^^|^^^^
+    :            `-- This modifies `velocities`
+ 49 |       
+    `----
+  help: This argument is a function which may reassign or mutate `velocities` after render, which can cause inconsistent behavior on subsequent renders. Consider using state instead
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/Fireworks.jsx:23:21]
+ 22 |       // Random spherical velocities
+ 23 |       const theta = Math.random() * Math.PI * 2;
+    :                     ^^^^^^|^^^^^^
+    :                           `-- Cannot call impure function
+ 24 |       const phi = Math.acos((Math.random() * 2) - 1);
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/Fireworks.jsx:24:30]
+ 23 |       const theta = Math.random() * Math.PI * 2;
+ 24 |       const phi = Math.acos((Math.random() * 2) - 1);
+    :                              ^^^^^^|^^^^^^
+    :                                    `-- Cannot call impure function
+ 25 |       const speed = Math.random() * 0.2 + 0.1;
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/Fireworks.jsx:25:21]
+ 24 |       const phi = Math.acos((Math.random() * 2) - 1);
+ 25 |       const speed = Math.random() * 0.2 + 0.1;
+    :                     ^^^^^^|^^^^^^
+    :                           `-- Cannot call impure function
+ 26 |       
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! eslint(no-unused-vars): Identifier 'useState' is imported but never used.
+   ,-[src/components/scene/ConcertShowcase.jsx:1:38]
+ 1 | import { useRef, useEffect, useMemo, useState } from 'react';
+   :                                      ^^^^|^^^
+   :                                          `-- 'useState' is imported here
+ 2 | import { useFrame, useThree } from '@react-three/fiber';
+   `----
+  help: Consider removing this import.
+
+  ! react(immutability): This value cannot be modified
+     ,-[src/components/scene/ConcertShowcase.jsx:332:5]
+ 276 | function DollyZoomCameraRig({ active }) {
+ 277 |   const { camera } = useThree();
+     :           ^^^|^^
+     :              `-- `camera` originates here
+ 278 | 
+ 279 |   useFrame(({ clock }, delta) => {
+ 280 |     if (!active) return;
+ 281 | 
+ 282 |     const t = clock.elapsedTime;
+ 283 |     const targetCenter = new THREE.Vector3(0, 2.2, 0);
+ 284 | 
+ 285 |     // Multi-phase camera choreography:
+ 286 |     // Phase 1 (0s - 20s): Dolly Zoom In + Crane Up
+ 287 |     // Phase 2 (20s - 40s): Dolly Zoom Out + Crane Down (Low angle sweep)
+ 288 |     // Phase 3 (40s - 60s): Oscillating Dolly Zoom Spiral Orbit
+ 289 |     const cycle = (t % 60) / 60; // 0 to 1 over 60 seconds
+ 290 | 
+ 291 |     let minFOV = 30;
+ 292 |     let maxFOV = 75;
+ 293 |     let currentFOV = 50;
+ 294 |     let heightOffset = 2.2;
+ 295 |     let orbitSpeed = 0.35;
+ 296 | 
+ 297 |     if (cycle < 0.33) {
+ 298 |       // Phase 1: Dolly In (FOV contracts 70 -> 32) + Upward Crane (Height 1.5 -> 3.8)
+ 299 |       const p = cycle / 0.33;
+ 300 |       currentFOV = THREE.MathUtils.lerp(70, 32, Math.sin(p * Math.PI / 2));
+ 301 |       heightOffset = THREE.MathUtils.lerp(1.5, 3.8, p);
+ 302 |       orbitSpeed = 0.3;
+ 303 |     } else if (cycle < 0.66) {
+ 304 |       // Phase 2: Dolly Out (FOV expands 32 -> 78) + Low Angle Crane Down (Height 3.8 -> 1.0)
+ 305 |       const p = (cycle - 0.33) / 0.33;
+ 306 |       currentFOV = THREE.MathUtils.lerp(32, 78, Math.sin(p * Math.PI / 2));
+ 307 |       heightOffset = THREE.MathUtils.lerp(3.8, 1.0, p);
+ 308 |       orbitSpeed = -0.4; // reverse orbit direction
+ 309 |     } else {
+ 310 |       // Phase 3: Continuous Oscillating Dolly Zoom In/Out + Dynamic Wave Crane & Fast Orbit
+ 311 |       const p = (cycle - 0.66) / 0.34;
+ 312 |       const wave = (Math.sin(p * Math.PI * 4) + 1) * 0.5;
+ 313 |       currentFOV = minFOV + wave * (maxFOV - minFOV);
+ 314 |       heightOffset = 2.2 + Math.sin(p * Math.PI * 3) * 1.4;
+ 315 |       orbitSpeed = 0.5;
+ 316 |     }
+ 317 | 
+ 318 |     // Invert FOV to Distance for Dolly Zoom Vertigo Effect
+ 319 |     const baseTargetHeight = 3.8;
+ 320 |     const desiredDistance = baseTargetHeight / (2 * Math.tan((currentFOV * Math.PI) / 360));
+ 321 | 
+ 322 |     // Orbital yaw rotation around performer
+ 323 |     const angle = t * orbitSpeed;
+ 324 | 
+ 325 |     const camX = Math.sin(angle) * desiredDistance;
+ 326 |     const camZ = Math.cos(angle) * desiredDistance;
+ 327 |     const camY = heightOffset;
+ 328 | 
+ 329 |     const targetCamPos = new THREE.Vector3(camX, camY, camZ);
+ 330 | 
+ 331 |     // Apply FOV and projection matrix update
+ 332 |     camera.fov = THREE.MathUtils.lerp(camera.fov, currentFOV, delta * 6);
+     :     ^^^|^^
+     :        `-- `camera` cannot be modified
+ 333 |     camera.updateProjectionMatrix();
+     `----
+  help: Modifying a value returned from a hook is not allowed. Consider moving the modification into the hook where the value is constructed
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/immutability
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/ConcertShowcase.jsx:24:21]
+ 23 |     for (let i = 0; i < count; i++) {
+ 24 |       const theta = Math.random() * Math.PI * 2;
+    :                     ^^^^^^|^^^^^^
+    :                           `-- Cannot call impure function
+ 25 |       const phi = Math.acos(Math.random() * 2 - 1);
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/ConcertShowcase.jsx:25:29]
+ 24 |       const theta = Math.random() * Math.PI * 2;
+ 25 |       const phi = Math.acos(Math.random() * 2 - 1);
+    :                             ^^^^^^|^^^^^^
+    :                                   `-- Cannot call impure function
+ 26 |       const speed = 2.5 + Math.random() * 4.5;
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/ConcertShowcase.jsx:26:27]
+ 25 |       const phi = Math.acos(Math.random() * 2 - 1);
+ 26 |       const speed = 2.5 + Math.random() * 4.5;
+    :                           ^^^^^^|^^^^^^
+    :                                 `-- Cannot call impure function
+ 27 |       p.push({
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+    ,-[src/components/scene/ConcertShowcase.jsx:34:23]
+ 33 |         speed,
+ 34 |         scale: 0.12 + Math.random() * 0.22,
+    :                       ^^^^^^|^^^^^^
+    :                             `-- Cannot call impure function
+ 35 |       });
+    `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+     ,-[src/components/scene/ConcertShowcase.jsx:173:19]
+ 172 |     for (let i = 0; i < count; i++) {
+ 173 |       angles[i] = Math.random() * Math.PI * 2;
+     :                   ^^^^^^|^^^^^^
+     :                         `-- Cannot call impure function
+ 174 |       rads[i] = 1.5 + Math.random() * 2.0;
+     `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+     ,-[src/components/scene/ConcertShowcase.jsx:174:23]
+ 173 |       angles[i] = Math.random() * Math.PI * 2;
+ 174 |       rads[i] = 1.5 + Math.random() * 2.0;
+     :                       ^^^^^^|^^^^^^
+     :                             `-- Cannot call impure function
+ 175 |       spds[i] = 0.4 + Math.random() * 0.8;
+     `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+  ! react(purity): Cannot call impure function during render
+     ,-[src/components/scene/ConcertShowcase.jsx:175:23]
+ 174 |       rads[i] = 1.5 + Math.random() * 2.0;
+ 175 |       spds[i] = 0.4 + Math.random() * 0.8;
+     :                       ^^^^^^|^^^^^^
+     :                             `-- Cannot call impure function
+ 176 | 
+     `----
+  help: `Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component re-renders
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/purity
+
+Found 42 warnings and 1 error.
+Finished in 40ms on 27 files with 104 rules using 8 threads.
+npm error Lifecycle script `lint` failed with error:
+npm error code 1
+npm error path D:\webcraze\LetsVirtual\frontend
+npm error workspace frontend@0.0.0
+npm error location D:\webcraze\LetsVirtual\frontend
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c oxlint
