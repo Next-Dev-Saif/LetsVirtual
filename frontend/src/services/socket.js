@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 import { useMMOStore } from '../store/useMMOStore';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const SOCKET_URL = import.meta.env.VITE_API_URL || 'https://vp-backend.bonto.run';
 
 export const socket = io(SOCKET_URL, {
   autoConnect: false,
@@ -9,10 +9,10 @@ export const socket = io(SOCKET_URL, {
 
 export const initializeSocket = () => {
   if (socket.connected) return;
-  
+
   const nickname = useMMOStore.getState().localNickname || 'Guest';
   socket.auth = { nickname };
-  
+
   socket.connect();
 
   socket.on('connect', () => {
@@ -65,7 +65,7 @@ export const initializeSocket = () => {
   socket.on('battleEnded', (data) => {
     const state = useMMOStore.getState();
     const { winnerId, loserId } = data;
-    
+
     // Check if we were in this battle
     if (state.activeBattle && (state.activeBattle.opponentId === winnerId || state.activeBattle.opponentId === loserId)) {
       setTimeout(() => {
@@ -75,13 +75,13 @@ export const initializeSocket = () => {
         socket.emit('playerAction', { state: 'Idle' });
       }, 3000); // End battle after 3 seconds so Death animation can finish
     }
-    
+
     // Announce to global chat
     const winner = state.players[winnerId];
     const loser = state.players[loserId];
     let winnerName = winnerId === socket.id ? "You" : (winner?.nickname || `Player ${winnerId.substring(0, 4)}`);
     let loserName = loserId === socket.id ? "You" : (loser?.nickname || `Player ${loserId.substring(0, 4)}`);
-    
+
     state.addChatMessage({
       id: Date.now(),
       sender: 'System',
