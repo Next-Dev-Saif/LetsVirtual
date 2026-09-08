@@ -68,6 +68,17 @@ function assignRoom() {
   return null; // Server full
 }
 
+// Utility to check and maintain room concert status when a player leaves
+function checkRoomConcertStatus(roomId) {
+  const room = rooms[roomId];
+  if (!room) return;
+
+  // Ensure the event cycle is running for the remaining players if it was idle
+  if (room.cycleStatus === 'idle' && Object.keys(room.players).length > 0) {
+    startRoomEventCycle(roomId);
+  }
+}
+
 // Master Room Event Sequence Controller
 function startRoomEventCycle(roomId) {
   const room = rooms[roomId];
